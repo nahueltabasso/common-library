@@ -1,5 +1,6 @@
 package nrt.common.microservice.controllers;
 
+import nrt.common.microservice.exceptions.CommonBusinessException;
 import nrt.common.microservice.services.CommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,10 @@ public class CommonController<E, S extends CommonService<E>> {
         E entityDB = null;
         try {
             entityDB = (E) service.save(entity);
+        } catch (CommonBusinessException e) {
+            response.put("message", "Internar Server Error!");
+            response.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
         } catch (Exception e) {
             response.put("message", "Internar Server Error!");
             response.put("error", e.getMessage());
