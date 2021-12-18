@@ -67,8 +67,12 @@ public class CommonController<E, S extends CommonService<E>> {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         logger.info("Enter to delete()");
-        service.deleteById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            service.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (CommonBusinessException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
     }
 
     protected ResponseEntity<?> validateBody(BindingResult bindingResult) {
