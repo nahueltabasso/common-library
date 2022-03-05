@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class CommonController<E, S extends CommonService<E>> {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody E entity, BindingResult bindingResult) throws Exception {
+    public ResponseEntity<?> create(@Validated @RequestBody E entity, BindingResult bindingResult) throws Exception {
         logger.info("Enter to create()");
         Map<String, Object> response = new HashMap<>();
         if (bindingResult.hasErrors()) {
