@@ -1,57 +1,69 @@
 package nrt.common.microservice.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import nrt.common.microservice.exceptions.CommonBusinessException;
+import nrt.common.microservice.models.dto.BaseDTO;
 import nrt.common.microservice.services.CommonService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
+/**
+ * Common Controller Layer. This abstract class provides the basics endpoints to do a CRUD
+ * This class receive 2 parameters a FilterDTO and a DTO
+ *
+ * @param <F>
+ * @param <DTO>
+ * @author nahueltabasso
+ */
+@Slf4j
+public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
 
-public class CommonController<E, S extends CommonService<E>> {
+    protected abstract CommonService getCommonService();
 
-    protected final static Logger logger = LoggerFactory.getLogger(CommonController.class);
-    @Autowired
-    protected S service;
+    @PostMapping("/search")
+    public ResponseEntity<?> search(@RequestBody F filterDTO) {
+        log.info("Enter to search()");
+        Page<DTO> page = this.getCommonService().searchCustom(filterDTO, null);
+        return ResponseEntity.ok().body(page);
+    }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+//    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping
     public ResponseEntity<?> getAll() {
-        logger.info("Enter to getAll()");
-        return ResponseEntity.ok().body(service.findAll());
+        log.info("Enter to getAll()");
+        return ResponseEntity.ok().body(this.getCommonService().findAll());
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+//    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable Long id) {
-        logger.info("Enter to getOne()");
-        Optional<E> opt = service.findById(id);
-        if (!opt.isPresent()) {
+        log.info("Enter to getOne()");
+        DTO dto = (DTO) this.getCommonService().findById(id);
+        if (dto == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok().body(opt.get());
+        return ResponseEntity.ok().body(dto);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+//    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping
-    public ResponseEntity<?> create(@Validated @RequestBody E entity, BindingResult bindingResult) throws Exception {
-        logger.info("Enter to create()");
+    public ResponseEntity<?> create(@Validated @RequestBody DTO dto, BindingResult bindingResult) throws Exception {
+        log.info("Enter to create()");
         Map<String, Object> response = new HashMap<>();
         if (bindingResult.hasErrors()) {
             return this.validateBody(bindingResult);
         }
-        E entityDB = null;
+        DTO dtoResponse = null;
         try {
-            entityDB = (E) service.save(entity);
+            dtoResponse = (DTO) this.getCommonService().save(dto);
         } catch (CommonBusinessException e) {
             response.put("message", "Internar Server Error!");
             response.put("error", e.getMessage());
@@ -61,15 +73,15 @@ public class CommonController<E, S extends CommonService<E>> {
             response.put("error", e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(entityDB);
+        return ResponseEntity.status(HttpStatus.CREATED).body(dtoResponse);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+//    @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
-        logger.info("Enter to delete()");
+        log.info("Enter to delete()");
         try {
-            service.deleteById(id);
+            this.getCommonService().deleteById(id);
             return ResponseEntity.noContent().build();
         } catch (CommonBusinessException e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
