@@ -2,6 +2,7 @@ package nrt.common.microservice.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import nrt.common.microservice.exceptions.CommonBusinessException;
+import nrt.common.microservice.exceptions.ResourceNotFoundException;
 import nrt.common.microservice.models.dto.CommonDTO;
 import nrt.common.microservice.models.entity.CommonEntity;
 import nrt.common.microservice.models.repository.CommonEntityRepository;
@@ -14,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -57,11 +57,10 @@ public abstract class CommonServiceImpl<DTO extends CommonDTO, E extends CommonE
     @Transactional(readOnly = true)
     public DTO findById(Long id) {
         log.info("Enter to findById()");
-        Optional<E> entityOpt = (Optional<E>) this.getCommonRepository().findById(id);
-        if (entityOpt.isPresent()) return this.entityToDto(entityOpt.get());
-
-        if (!entityOpt.isPresent()) throw new CommonBusinessException("Not Found");
-        return null;
+        E entity = this.getCommonRepository().findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found row with id = " + id));
+        DTO dto = this.entityToDto(entity);
+        return dto;
     }
 
     @Override
@@ -72,7 +71,7 @@ public abstract class CommonServiceImpl<DTO extends CommonDTO, E extends CommonE
             E entity = this.dtoToEntity(dto);
             E entityDb = (E) this.getCommonRepository().save(entity);
             return this.entityToDto(entityDb);
-        } catch (Exception e) {
+        } catch (CommonBusinessException e) {
             e.printStackTrace();
         }
         return null;

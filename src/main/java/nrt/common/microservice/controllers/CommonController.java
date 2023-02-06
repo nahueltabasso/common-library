@@ -44,12 +44,10 @@ public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
 
 //    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getOne(@PathVariable Long id) {
+    public ResponseEntity<DTO> getOne(@PathVariable Long id) {
         log.info("Enter to getOne()");
-        DTO dto = (DTO) this.getCommonService().findById(id);
-        if (dto == null) {
-            return ResponseEntity.notFound().build();
-        }
+        DTO dto = null;
+        dto = (DTO) this.getCommonService().findById(id);
         return ResponseEntity.ok().body(dto);
     }
 
