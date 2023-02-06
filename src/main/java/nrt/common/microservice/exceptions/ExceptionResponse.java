@@ -20,6 +20,7 @@ public class ExceptionResponse {
 
     private Integer httpStatus;
     private LocalDateTime timestamp;
+    private String errorCode;
     private String message;
     private String description;
 }

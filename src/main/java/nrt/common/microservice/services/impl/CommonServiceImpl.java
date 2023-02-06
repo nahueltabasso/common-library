@@ -2,6 +2,7 @@ package nrt.common.microservice.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import nrt.common.microservice.exceptions.CommonBusinessException;
+import nrt.common.microservice.exceptions.ErrorCode;
 import nrt.common.microservice.exceptions.ResourceNotFoundException;
 import nrt.common.microservice.models.dto.CommonDTO;
 import nrt.common.microservice.models.entity.CommonEntity;
@@ -58,7 +59,7 @@ public abstract class CommonServiceImpl<DTO extends CommonDTO, E extends CommonE
     public DTO findById(Long id) {
         log.info("Enter to findById()");
         E entity = this.getCommonRepository().findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found row with id = " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.NOT_FOUND_MESSAGE));
         DTO dto = this.entityToDto(entity);
         return dto;
     }
