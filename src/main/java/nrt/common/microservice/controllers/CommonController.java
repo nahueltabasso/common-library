@@ -5,6 +5,8 @@ import nrt.common.microservice.exceptions.CommonBusinessException;
 import nrt.common.microservice.models.dto.BaseDTO;
 import nrt.common.microservice.services.CommonService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,10 +31,12 @@ public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
     protected abstract CommonService getCommonService();
 
     @PostMapping("/search")
-    public ResponseEntity<?> search(@RequestBody F filterDTO) {
+    public ResponseEntity<?> search(@RequestBody F filterDTO, @RequestParam(defaultValue = "0") int page,
+                                    @RequestParam(defaultValue = "5") int size) {
         log.info("Enter to search()");
-        Page<DTO> page = this.getCommonService().searchCustom(filterDTO, null);
-        return ResponseEntity.ok().body(page);
+        Pageable paging = PageRequest.of(page, size);
+        Page<DTO> pageDTO = this.getCommonService().searchCustom(filterDTO, paging);
+        return ResponseEntity.ok().body(pageDTO);
     }
 
 //    @PreAuthorize("hasRole('ROLE_USER')")

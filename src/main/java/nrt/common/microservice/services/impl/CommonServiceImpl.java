@@ -12,8 +12,12 @@ import nrt.common.microservice.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +35,8 @@ public abstract class CommonServiceImpl<DTO extends CommonDTO, E extends CommonE
     @Autowired
     protected abstract CommonEntityRepository<E> getCommonRepository();
 
+    protected abstract Specification<E> getCustomSpecification(Object filter);
+
     protected abstract E dtoToEntity(DTO dto);
 
     protected abstract DTO entityToDto(E entity);
@@ -38,7 +44,8 @@ public abstract class CommonServiceImpl<DTO extends CommonDTO, E extends CommonE
     @Override
     public Page<DTO> searchCustom(Object filterDTO, Pageable pageable) {
         log.info("Enter to searchCustom");
-        Page<DTO> page = this.getCommonRepository().findAll(pageable).map(this::entityToDto);
+        Specification<E> customSpec = this.getCustomSpecification(filterDTO);
+        Page<DTO> page = this.getCommonRepository().findAll(customSpec, pageable).map(this::entityToDto);
         return page;
     }
 
@@ -83,5 +90,9 @@ public abstract class CommonServiceImpl<DTO extends CommonDTO, E extends CommonE
     public void deleteById(Long id) {
         log.info("Enter to deleteById()");
         this.getCommonRepository().deleteById(id);
+    }
+
+    protected Long getTotalCount(CriteriaBuilder criteriaBuilder, Predicate[] predicates) {
+        return 1L;
     }
 }
