@@ -43,7 +43,7 @@ public class CommonEntity implements Serializable {
     @LastModifiedBy
     protected String modificationUser;
     @Column(name = "version")
-    protected Boolean version;
+    protected Integer version;
     @Column(name = "deleted")
     protected Boolean deleted;
 

@@ -2,7 +2,7 @@ package nrt.common.microservice.utils;
 
 import java.util.List;
 
-public class Utils {
+public class ListUtils {
 
     /**
      * Return true when the list that receive such as parameter is null or is empty

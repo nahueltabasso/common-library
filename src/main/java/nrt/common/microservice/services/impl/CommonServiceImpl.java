@@ -8,14 +8,13 @@ import nrt.common.microservice.models.dto.CommonDTO;
 import nrt.common.microservice.models.entity.CommonEntity;
 import nrt.common.microservice.models.repository.CommonEntityRepository;
 import nrt.common.microservice.services.CommonService;
-import nrt.common.microservice.utils.Utils;
+import nrt.common.microservice.utils.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public abstract class CommonServiceImpl<DTO extends CommonDTO, E extends CommonE
         log.info("Enter to findAll()");
         List<E> entities = (List<E>) this.getCommonRepository().findAll();
         List<DTO> dtoList = new ArrayList<>();
-        if (Utils.isNullOrEmpty(entities)) return dtoList;
+        if (ListUtils.isNullOrEmpty(entities)) return dtoList;
 
         dtoList = entities.stream().map(e -> this.entityToDto(e)).collect(Collectors.toList());
         return dtoList;
