@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
 
     protected abstract CommonService getCommonService();
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/search")
     public ResponseEntity<?> search(@RequestBody F filterDTO, @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "5") int size) {
@@ -39,14 +41,14 @@ public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
         return ResponseEntity.ok().body(pageDTO);
     }
 
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping
     public ResponseEntity<?> getAll() {
         log.info("Enter to getAll()");
         return ResponseEntity.ok().body(this.getCommonService().findAll());
     }
 
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<DTO> getOne(@PathVariable Long id) {
         log.info("Enter to getOne()");
@@ -55,7 +57,7 @@ public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
         return ResponseEntity.ok().body(dto);
     }
 
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping
     public ResponseEntity<?> create(@Validated @RequestBody DTO dto, BindingResult bindingResult) throws Exception {
         log.info("Enter to create()");
@@ -78,7 +80,7 @@ public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
         return ResponseEntity.status(HttpStatus.CREATED).body(dtoResponse);
     }
 
-//    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id) {
         log.info("Enter to delete()");
