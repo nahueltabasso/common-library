@@ -9,6 +9,9 @@ import nrt.common.microservice.models.entity.CommonEntity;
 import nrt.common.microservice.models.repository.CommonEntityRepository;
 import nrt.common.microservice.services.CommonService;
 import nrt.common.microservice.utils.ListUtils;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -89,6 +92,12 @@ public abstract class CommonServiceImpl<DTO extends CommonDTO, E extends CommonE
     public void deleteById(Long id) {
         log.info("Enter to deleteById()");
         this.getCommonRepository().deleteById(id);
+    }
+
+    public Point getCoordinatePoint(Double latitude, Double longitude) {
+        log.info("Enter to getCoordinatePoint()");
+        GeometryFactory factory = new GeometryFactory();
+        return factory.createPoint(new Coordinate(latitude, longitude));
     }
 
     protected Long getTotalCount(CriteriaBuilder criteriaBuilder, Predicate[] predicates) {
