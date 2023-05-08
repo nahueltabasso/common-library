@@ -3,6 +3,7 @@ package nrt.common.microservice.models.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import nrt.common.microservice.security.session.AppSessionUser;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -30,21 +31,42 @@ public class CommonEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     protected Long id;
-    @Column(name = "creationdatetime")
+    @Column(name = "creationdatetime", updatable = true)
     @CreatedDate
     protected LocalDateTime creationDateTime;
-    @Column(name = "creationuser")
+    @Column(name = "creationuser", updatable = true)
     @CreatedBy
     protected String creationUser;
-    @Column(name = "modificationdatetime")
+    @Column(name = "modificationdatetime", updatable = true)
     @LastModifiedDate
     protected LocalDateTime modificationDateTime;
-    @Column(name = "modificationuser")
+    @Column(name = "modificationuser", updatable = true)
     @LastModifiedBy
     protected String modificationUser;
-    @Column(name = "version")
+    @Column(name = "version", updatable = true)
     protected Integer version;
-    @Column(name = "deleted")
+    @Column(name = "deleted", updatable = true)
     protected Boolean deleted;
 
+    @PrePersist
+    public void prePersist() {
+        // First time to persist in database (create operation)
+        this.creationDateTime = LocalDateTime.now();
+        this.creationUser = "admin";
+        this.modificationDateTime = LocalDateTime.now();
+        this.modificationUser = "admin";
+        this.version = 0;
+        this.deleted = false;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        // Update operation
+        this.creationDateTime = this.creationDateTime;
+        this.creationUser = this.creationUser;
+        this.modificationDateTime = LocalDateTime.now();
+        this.modificationUser = AppSessionUser.getCurrentAppUser().getUsername();
+        this.version = this.version + 1;
+        this.deleted = this.deleted;
+    }
 }
