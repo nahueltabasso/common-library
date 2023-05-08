@@ -17,7 +17,7 @@ import java.util.UUID;
 /**
  * Implementation of the FileHelper interface to managed files
  *
- * @author nahueltabasso 
+ * @author nahueltabasso
  */
 @Service
 @Slf4j
