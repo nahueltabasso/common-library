@@ -25,6 +25,7 @@ public class CommonUserDetails implements UserDetails {
     private String username;
     private String password;
     private List<GrantedAuthority> authorities;
+    private String token;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
