@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Custon Serializer for Geo Coordinates (GPS Points)
  *
- * @author nahueltabasso 
+ * @author nahueltabasso
  */
 public class PointSerializer extends JsonSerializer<Point> {
 

@@ -15,6 +15,11 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Map;
 
+/**
+ * Implementation of the EmailService Layer
+ *
+ * @author nahueltabasso
+ */
 @Service
 @Slf4j
 public class EmailServiceImpl implements EmailService {
