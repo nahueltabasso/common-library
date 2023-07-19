@@ -65,7 +65,11 @@ public class CommonEntity implements Serializable {
         this.creationDateTime = this.creationDateTime;
         this.creationUser = this.creationUser;
         this.modificationDateTime = LocalDateTime.now();
-        this.modificationUser = AppSessionUser.getCurrentAppUser().getUsername();
+        if (AppSessionUser.getCurrentAppUser() != null) {
+            this.modificationUser = AppSessionUser.getCurrentAppUser().getUsername();
+        } else {
+            this.modificationUser = "admin";
+        }
         this.version = this.version + 1;
         this.deleted = this.deleted;
     }
