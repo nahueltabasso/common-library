@@ -2,8 +2,11 @@ package nrt.common.microservice.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import nrt.common.microservice.exceptions.CommonBusinessException;
+import nrt.common.microservice.exceptions.ExceptionResponse;
 import nrt.common.microservice.models.dto.BaseDTO;
 import nrt.common.microservice.services.CommonService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +18,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -30,6 +35,8 @@ import java.util.Map;
 public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
 
     protected abstract CommonService getCommonService();
+    @Autowired
+    protected MessageSource messageSource;
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/search")
@@ -98,6 +105,19 @@ public abstract class CommonController<F extends Object, DTO extends BaseDTO> {
             errors.put(err.getField(), "Field " + err.getField() + " " + err.getDefaultMessage());
         });
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    protected ResponseEntity<?> responseApiError(String errorCode) {
+        log.info("Enter to responseApiError()");
+        log.error("Error Code: " + errorCode);
+        ExceptionResponse error = new ExceptionResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                LocalDateTime.now(),
+                errorCode,
+                messageSource.getMessage(errorCode, null, Locale.US),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
 }
