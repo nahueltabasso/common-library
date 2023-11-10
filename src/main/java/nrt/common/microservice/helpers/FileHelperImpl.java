@@ -5,8 +5,6 @@ import nrt.common.microservice.exceptions.CommonBusinessException;
 import nrt.common.microservice.exceptions.ErrorCode;
 import org.apache.commons.io.FileUtils;
 import org.aspectj.util.FileUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
